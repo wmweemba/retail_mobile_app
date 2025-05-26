@@ -105,8 +105,8 @@ const Reports: React.FC = () => {
     generatePDF(filteredTransactions, selectedRange.label);
   };
   
-  const handleExportExcel = () => {
-    generateExcel(filteredTransactions, selectedRange.label);
+  const handleExportExcel = async () => {
+    await generateExcel(filteredTransactions, selectedRange.label);
   };
   
   const handleShare = async () => {
@@ -137,8 +137,8 @@ const Reports: React.FC = () => {
               onClick={() => handleRangeSelect(getRange())}
               className={`btn ${
                 selectedRange.label === label 
-                  ? 'btn-primary' 
-                  : 'btn-outline'
+                  ? 'bg-blue-600 text-white border border-blue-600' 
+                  : 'bg-white text-blue-600 border border-blue-600 hover:bg-blue-50'
               }`}
             >
               {label}
@@ -177,7 +177,7 @@ const Reports: React.FC = () => {
         <div className="flex flex-wrap gap-4">
           <button
             onClick={handleExportPDF}
-            className="btn btn-primary"
+            className="btn bg-blue-600 text-white hover:bg-blue-700"
           >
             <FileText className="mr-2 h-5 w-5" />
             Export as PDF
@@ -185,17 +185,17 @@ const Reports: React.FC = () => {
           
           <button
             onClick={handleExportExcel}
-            className="btn btn-primary"
+            className="btn bg-blue-600 text-white hover:bg-blue-700"
           >
             <FileSpreadsheet className="mr-2 h-5 w-5" />
             Export as Excel
           </button>
           
           {/* Share button (mobile only) */}
-          {navigator.share && (
+          {typeof navigator.share === "function" && (
             <button
               onClick={handleShare}
-              className="btn btn-outline md:hidden"
+              className="btn border border-blue-600 text-blue-600 bg-white hover:bg-blue-50 md:hidden"
             >
               <Share2 className="mr-2 h-5 w-5" />
               Share

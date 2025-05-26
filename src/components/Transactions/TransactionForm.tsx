@@ -114,8 +114,8 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               onClick={() => handleTypeChange(type as TransactionType)}
               className={`flex-1 py-3 font-medium text-sm focus:outline-none transition-colors ${
                 formData.type === type
-                  ? `bg-primary/10 text-primary border-b-2 border-primary`
-                  : 'bg-base-200 text-base-content/60 hover:bg-base-300 border-b border-base-300'
+                  ? `bg-blue-100 text-blue-700 border-b-2 border-blue-600`
+                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200 border-b border-gray-300'
               }`}
             >
               {label}
@@ -151,7 +151,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
           </label>
           <div className="mt-1 relative rounded-md shadow-sm">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-base-content/60 sm:text-sm">K</span>
+              <span className="text-gray-400 sm:text-sm">K</span>
             </div>
             <input
               type="text"
@@ -232,7 +232,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       <div className="pt-4">
         <button
           type="submit"
-          className="w-full btn btn-primary py-3"
+          className="w-full btn bg-blue-600 text-white hover:bg-blue-700 py-3"
         >
           {isEditing ? 'Update Transaction' : 'Save Transaction'}
         </button>

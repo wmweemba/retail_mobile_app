@@ -20,8 +20,7 @@ export default {
       },
     },
   },
-  plugins: [require("daisyui")],
-  daisyui: {
-    themes: ["nord"],
-  },
+  plugins: [
+    // DaisyUI removed
+  ],
 }

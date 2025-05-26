@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { Transaction } from '../types';
 import { format } from 'date-fns';
 
@@ -52,24 +52,50 @@ export const generatePDF = (transactions: Transaction[], reportName: string) => 
   doc.save(`Financial_Report_${reportName.replace(/\s+/g, '_')}_${format(new Date(), 'yyyyMMdd')}.pdf`);
 };
 
-export const generateExcel = (transactions: Transaction[], reportName: string) => {
-  const worksheet = XLSX.utils.json_to_sheet(
-    transactions.map(t => ({
-      Date: format(new Date(t.date), 'dd/MM/yyyy'),
-      'Transaction ID': t.id,
-      Amount: `${t.type === 'income' ? '+' : '-'} K${t.amount.toFixed(2)}`,
-      Type: t.type,
-      Vendor: t.vendor,
-      Category: t.category,
-      Source: t.source,
-      Notes: t.notes,
-      'Created At': format(new Date(t.createdAt), 'dd/MM/yyyy HH:mm')
-    }))
-  );
-  
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
-  
-  // Save the Excel file
-  XLSX.writeFile(workbook, `Financial_Report_${reportName.replace(/\s+/g, '_')}_${format(new Date(), 'yyyyMMdd')}.xlsx`);
+export const generateExcel = async (transactions: Transaction[], reportName: string) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Transactions');
+
+  worksheet.columns = [
+    { header: 'Date', key: 'date', width: 15 },
+    { header: 'Transaction ID', key: 'id', width: 20 },
+    { header: 'Amount', key: 'amount', width: 15 },
+    { header: 'Type', key: 'type', width: 10 },
+    { header: 'Vendor', key: 'vendor', width: 20 },
+    { header: 'Category', key: 'category', width: 15 },
+    { header: 'Source', key: 'source', width: 15 },
+    { header: 'Notes', key: 'notes', width: 25 },
+    { header: 'Created At', key: 'createdAt', width: 20 },
+  ];
+
+  transactions.forEach(t => {
+    worksheet.addRow({
+      date: format(new Date(t.date), 'dd/MM/yyyy'),
+      id: t.id,
+      amount: `${t.type === 'income' ? '+' : '-'} K${t.amount.toFixed(2)}`,
+      type: t.type,
+      vendor: t.vendor,
+      category: t.category,
+      source: t.source,
+      notes: t.notes,
+      createdAt: format(new Date(t.createdAt), 'dd/MM/yyyy HH:mm'),
+    });
+  });
+
+  // Style header
+  worksheet.getRow(1).font = { bold: true };
+
+  // Generate buffer and trigger download
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Financial_Report_${reportName.replace(/\s+/g, '_')}_${format(new Date(), 'yyyyMMdd')}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
 };
